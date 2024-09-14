@@ -1,0 +1,14 @@
+name: DiscordMC
+version: '${version}'
+main: com.cupoftea.discordmc.DiscordMCPlugin
+api-version: '1.13'
+authors: [cupoftea]
+description: A plugin that bridges Minecraft and Discord chat
+
+permissions:
+  discordmc.reload:
+    description: Allows reloading the DiscordMC configuration
+    default: op
+  discordmc.status:
+    description: Allows checking the Discord connection status
+    default: op
