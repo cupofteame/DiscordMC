@@ -106,6 +106,19 @@ public class DiscordMCCommands extends BaseCommand {
         }
     }
 
+    @CommandAlias("unlink")
+    @Description("Unlink your Minecraft account from Discord")
+    public void onUnlink(Player player) {
+        String discordId = plugin.getMongoDBManager().getDiscordId(player.getUniqueId());
+        if (discordId != null) {
+            plugin.getMongoDBManager().unlinkAccount(player.getUniqueId());
+            player.sendMessage(ChatColor.GREEN + "Your Minecraft account has been unlinked from Discord.");
+            plugin.getDiscordManager().getDiscordListener().removeLinkedRole(discordId);
+        } else {
+            player.sendMessage(ChatColor.RED + "Your Minecraft account is not linked to a Discord account.");
+        }
+    }
+
     public String generateLinkCode(String discordId, String minecraftUsername) {
         String code = UUID.randomUUID().toString().substring(0, 6);
         pendingLinks.put(code, new PendingLink(discordId, minecraftUsername));

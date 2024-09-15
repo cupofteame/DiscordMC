@@ -11,6 +11,8 @@ commands:
     aliases: [dmc]
   link:
     description: Link your Minecraft account to Discord
+  unlink:
+    description: Unlink your Minecraft account from Discord
   discord:
     description: Show your linked Discord account
 

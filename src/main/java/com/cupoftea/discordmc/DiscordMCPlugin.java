@@ -7,7 +7,7 @@ import com.cupoftea.discordmc.config.ConfigManager;
 import com.cupoftea.discordmc.database.MongoDBManager;
 import com.cupoftea.discordmc.discord.DiscordManager;
 import com.cupoftea.discordmc.minecraft.MinecraftChatListener;
-import com.cupoftea.discordmc.minecraft.PlayerJoinListener; // Add this import
+import com.cupoftea.discordmc.minecraft.PlayerJoinListener;
 
 import co.aikar.commands.PaperCommandManager;
 

@@ -54,6 +54,10 @@ public class MongoDBManager {
         );
     }
 
+    public void unlinkAccount(UUID minecraftUUID) {
+        linkedAccounts.deleteOne(new Document("minecraft_uuid", minecraftUUID.toString()));
+    }
+
     public void close() {
         if (mongoClient != null) {
             mongoClient.close();

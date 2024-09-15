@@ -105,6 +105,33 @@ public class DiscordListener extends ListenerAdapter {
         );
     }
 
+    public void removeLinkedRole(String discordId) {
+        String roleId = plugin.getConfigManager().getLinkedAccountRoleId();
+        JDA jda = discordManager.getJda();
+        Guild guild = jda.getGuilds().stream().findFirst().orElse(null);
+        if (guild == null) {
+            plugin.getLogger().warning("Failed to remove role: Bot is not in any guild");
+            return;
+        }
+
+        Role role;
+        if (roleId.isEmpty()) {
+            role = guild.getRolesByName("Account Linked", true).stream().findFirst().orElse(null);
+        } else {
+            role = guild.getRoleById(roleId);
+        }
+
+        if (role == null) {
+            plugin.getLogger().warning("Failed to remove role: Role not found");
+            return;
+        }
+
+        guild.removeRoleFromMember(UserSnowflake.fromId(discordId), role).queue(
+            success -> plugin.getLogger().info("Removed linked role from user " + discordId),
+            error -> plugin.getLogger().warning("Failed to remove role from user " + discordId + ": " + error.getMessage())
+        );
+    }
+
     private Role getOrCreateLinkedRole(Guild guild) {
         Role existingRole = guild.getRolesByName("Account Linked", true).stream().findFirst().orElse(null);
         if (existingRole != null) {
