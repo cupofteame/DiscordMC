@@ -9,6 +9,9 @@ DiscordMC is a Minecraft plugin that bridges chat between your Minecraft server 
 - Simple configuration
 - Account linking between Minecraft and Discord
 - Assigns a role to linked Discord accounts
+- Toggle account linking on/off
+- Automatic username updates on player join
+- Direct messaging to Discord users for successful linking/unlinking
 
 ## Requirements
 
@@ -37,6 +40,7 @@ These dependencies are automatically managed by Gradle and don't require manual 
 - `/discordmc` - Show help message
 - `/discordmc reload` - Reload the plugin configuration
 - `/discordmc status` - Check Discord connection status
+- `/discordmc togglelinking` - Toggle the ability to link accounts
 - `/link <code>` - Link your Minecraft account to Discord
 - `/unlink` - Unlink your Minecraft account from Discord
 - `/discord` - Show your linked Discord account
@@ -45,7 +49,7 @@ These dependencies are automatically managed by Gradle and don't require manual 
 
 - `discordmc.reload` - Allows use of the reload command
 - `discordmc.status` - Allows use of the status command
-- `discordmc.linkaccount` - Allows linking Minecraft and Discord accounts (default: true)
+- `discordmc.togglelinking` - Allows toggling the ability to link accounts
 
 ## Account Linking
 
