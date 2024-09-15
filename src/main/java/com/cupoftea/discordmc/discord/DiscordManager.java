@@ -12,6 +12,7 @@ import com.cupoftea.discordmc.config.ConfigManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -37,6 +38,7 @@ public class DiscordManager {
             jda = JDABuilder.createDefault(token)
                     .enableIntents(GatewayIntent.MESSAGE_CONTENT)
                     .addEventListeners(discordListener)
+                    .setActivity(Activity.listening("Accounts"))
                     .build();
             jda.awaitReady();
             discordListener.registerCommands(jda);
