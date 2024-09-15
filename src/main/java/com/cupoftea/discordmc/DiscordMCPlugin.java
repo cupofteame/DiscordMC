@@ -4,8 +4,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.cupoftea.discordmc.commands.DiscordMCCommands;
 import com.cupoftea.discordmc.config.ConfigManager;
+import com.cupoftea.discordmc.database.MongoDBManager;
 import com.cupoftea.discordmc.discord.DiscordManager;
 import com.cupoftea.discordmc.minecraft.MinecraftChatListener;
+import com.cupoftea.discordmc.minecraft.PlayerJoinListener; // Add this import
 
 import co.aikar.commands.PaperCommandManager;
 
@@ -14,6 +16,8 @@ public class DiscordMCPlugin extends JavaPlugin {
 	private ConfigManager configManager;
 	private DiscordManager discordManager;
 	private PaperCommandManager commandManager;
+	private MongoDBManager mongoDBManager;
+	private DiscordMCCommands discordMCCommands;
 
 	@Override
 	public void onEnable() {
@@ -24,18 +28,26 @@ public class DiscordMCPlugin extends JavaPlugin {
 			return;
 		}
 
-		discordManager = new DiscordManager(this, configManager);
+		this.commandManager = new PaperCommandManager(this);
+		this.discordMCCommands = new DiscordMCCommands(this);
+		commandManager.registerCommand(discordMCCommands);
+
+		discordManager = new DiscordManager(this, configManager, discordMCCommands);
 		if (!discordManager.initialize()) {
 			getLogger().severe("Failed to initialize Discord connection. Disabling plugin.");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 
-		this.commandManager = new PaperCommandManager(this);
-		commandManager.registerCommand(new DiscordMCCommands(this));
-
 		getServer().getPluginManager().registerEvents(new MinecraftChatListener(this, discordManager), this);
 		getLogger().info("DiscordMC plugin has been enabled!");
+
+		mongoDBManager = new MongoDBManager(
+			configManager.getMongoDbConnectionString(),
+			configManager.getMongoDbDatabaseName()
+		);
+
+		getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 	}
 
 	@Override
@@ -44,6 +56,9 @@ public class DiscordMCPlugin extends JavaPlugin {
 			discordManager.shutdown();
 		}
 		getLogger().info("DiscordMC plugin has been disabled!");
+		if (mongoDBManager != null) {
+			mongoDBManager.close();
+		}
 	}
 
 	public ConfigManager getConfigManager() {
@@ -64,7 +79,7 @@ public class DiscordMCPlugin extends JavaPlugin {
 			discordManager.shutdown();
 		}
 
-		discordManager = new DiscordManager(this, configManager);
+		discordManager = new DiscordManager(this, configManager, discordMCCommands);
 		if (!discordManager.initialize()) {
 			getLogger().severe("Failed to reinitialize Discord connection.");
 			return false;
@@ -74,5 +89,17 @@ public class DiscordMCPlugin extends JavaPlugin {
 
 		getLogger().info("DiscordMC plugin has been reloaded successfully!");
 		return true;
+	}
+
+	public MongoDBManager getMongoDBManager() {
+		return mongoDBManager;
+	}
+
+	public PaperCommandManager getCommandManager() {
+		return commandManager;
+	}
+
+	public DiscordMCCommands getDiscordMCCommands() {
+		return discordMCCommands;
 	}
 }

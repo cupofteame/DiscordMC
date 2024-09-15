@@ -23,6 +23,7 @@ dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:1.13.2-R0.1-SNAPSHOT")
     implementation("net.dv8tion:JDA:5.0.0-beta.13")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+    implementation("org.mongodb:mongodb-driver-sync:4.9.1")
 }
 
 tasks {

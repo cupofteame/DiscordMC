@@ -5,6 +5,15 @@ api-version: '1.13'
 authors: [cupoftea]
 description: A plugin that bridges Minecraft and Discord chat
 
+commands:
+  discordmc:
+    description: Main command for DiscordMC plugin
+    aliases: [dmc]
+  link:
+    description: Link your Minecraft account to Discord
+  discord:
+    description: Show your linked Discord account
+
 permissions:
   discordmc.reload:
     description: Allows reloading the DiscordMC configuration
@@ -12,3 +21,6 @@ permissions:
   discordmc.status:
     description: Allows checking the Discord connection status
     default: op
+  discordmc.linkaccount:
+    description: Allows linking Minecraft and Discord accounts
+    default: true
