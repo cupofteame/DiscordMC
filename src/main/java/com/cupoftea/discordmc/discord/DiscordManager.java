@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -68,6 +69,33 @@ public class DiscordManager {
             channel.sendMessageEmbeds(embed.build()).queue();
         } else {
             plugin.getLogger().warning("Failed to send message to Discord: Channel not found");
+        }
+    }
+
+    public void sendEmbedToDiscord(MessageEmbed embed) {
+        TextChannel channel = jda.getTextChannelById(discordChannelId);
+        if (channel != null) {
+            channel.sendMessageEmbeds(embed).queue();
+        } else {
+            plugin.getLogger().warning("Failed to send embed to Discord: Channel not found");
+        }
+    }
+
+    public void sendDirectMessageToUser(String discordId, String message) {
+        try {
+            User user = jda.retrieveUserById(discordId).complete();
+            if (user != null) {
+                user.openPrivateChannel().queue((channel) ->
+                    channel.sendMessage(message).queue(
+                        success -> plugin.getLogger().info("Sent DM to user " + discordId),
+                        error -> plugin.getLogger().warning("Failed to send DM to user " + discordId + ": " + error.getMessage())
+                    )
+                );
+            } else {
+                plugin.getLogger().warning("Failed to find Discord user with ID: " + discordId);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error sending direct message to user " + discordId + ": " + e.getMessage());
         }
     }
 

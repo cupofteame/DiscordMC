@@ -54,8 +54,9 @@ public class MongoDBManager {
         );
     }
 
-    public void unlinkAccount(UUID minecraftUUID) {
-        linkedAccounts.deleteOne(new Document("minecraft_uuid", minecraftUUID.toString()));
+    public String unlinkAccount(UUID minecraftUUID) {
+        Document doc = linkedAccounts.findOneAndDelete(new Document("minecraft_uuid", minecraftUUID.toString()));
+        return doc != null ? doc.getString("discord_id") : null;
     }
 
     public void close() {

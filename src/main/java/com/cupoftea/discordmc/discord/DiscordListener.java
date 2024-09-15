@@ -51,6 +51,11 @@ public class DiscordListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (event.getName().equals("link")) {
+            if (!plugin.getConfig().getBoolean("allow-linking", true)) {
+                event.reply("Account linking is currently disabled.").setEphemeral(true).queue();
+                return;
+            }
+
             String minecraftUsername = event.getOption("minecraft_username").getAsString();
             String discordId = event.getUser().getId();
             

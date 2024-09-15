@@ -3,3 +3,4 @@ discord-channel-id: "YOUR_DISCORD_CHANNEL_ID"
 mongodb-connection-string: "mongodb://localhost:27017"
 mongodb-database-name: "discordmc"
 linked-account-role-id: ""  # Leave empty to create a default role
+allow-linking: true
