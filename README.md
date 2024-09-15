@@ -1,6 +1,6 @@
 # DiscordMC
 
-DiscordMC is a Minecraft plugin that bridges chat between your Minecraft server and a Discord channel.
+DiscordMC is a Minecraft plugin that bridges chat between your Minecraft server and a Discord channel. It also allows players to link their Minecraft accounts to their Discord accounts, enabling features such as role assignment and channel notifications.
 
 ## Features
 
