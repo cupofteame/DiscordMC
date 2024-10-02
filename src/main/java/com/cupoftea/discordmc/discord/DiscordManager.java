@@ -2,6 +2,7 @@ package com.cupoftea.discordmc.discord;
 
 import java.awt.Color;
 import java.time.Instant;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 
@@ -81,7 +82,7 @@ public class DiscordManager {
         }
     }
 
-    public void sendDirectMessageToUser(String discordId, String message) {
+    public void sendDirectMessage(String discordId, String message) {
         try {
             User user = jda.retrieveUserById(discordId).complete();
             if (user != null) {
@@ -127,5 +128,36 @@ public class DiscordManager {
             plugin.getLogger().warning("Failed to retrieve Discord username for ID " + discordId + ": " + e.getMessage());
             return null;
         }
+    }
+
+    public void sendSyncInfoEmbed() {
+        String syncInfoChannelId = configManager.getSyncInfoChannelId();
+        if (syncInfoChannelId == null || syncInfoChannelId.isEmpty()) {
+            plugin.getLogger().warning("Sync info channel ID is not set in the config.");
+            return;
+        }
+
+        TextChannel channel = jda.getTextChannelById(syncInfoChannelId);
+        if (channel == null) {
+            plugin.getLogger().warning("Could not find the sync info channel with ID: " + syncInfoChannelId);
+            return;
+        }
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle(configManager.getMessage("sync-info.title"));
+        embed.setColor(Color.decode(configManager.getMessage("sync-info.color")));
+        embed.setDescription(configManager.getMessage("sync-info.description"));
+
+        List<String> steps = configManager.getMessageList("sync-info.steps");
+        for (int i = 0; i < steps.size(); i++) {
+            embed.addField("Step " + (i + 1), steps.get(i), false);
+        }
+
+        embed.setFooter(configManager.getMessage("sync-info.footer"));
+
+        channel.sendMessageEmbeds(embed.build()).queue(
+            success -> plugin.getLogger().info("Sync info embed sent successfully."),
+            error -> plugin.getLogger().warning("Failed to send sync info embed: " + error.getMessage())
+        );
     }
 }

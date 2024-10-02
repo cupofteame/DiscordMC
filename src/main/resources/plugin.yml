@@ -32,3 +32,7 @@ permissions:
   discordmc.togglelinking:
     description: Allows toggling the ability to link accounts
     default: op
+
+# DO NOT TOUCH
+config-files:
+  - messages.yml

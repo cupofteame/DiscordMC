@@ -30,7 +30,7 @@ public class DiscordMCCommands extends BaseCommand {
 
     @Default
     @Description("Shows DiscordMC commands")
-    public void onDefault(CommandSender sender) {
+    public void showHelp(CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "=== DiscordMC Commands ===");
         sender.sendMessage(ChatColor.YELLOW + "/discordmc" + ChatColor.WHITE + " - Show this help message");
         sender.sendMessage(ChatColor.YELLOW + "/discordmc reload" + ChatColor.WHITE + " - Reload the plugin configuration");
@@ -44,7 +44,7 @@ public class DiscordMCCommands extends BaseCommand {
     @Subcommand("reload")
     @Description("Reloads the DiscordMC configuration")
     @CommandPermission("discordmc.reload")
-    public void onReload(CommandSender sender) {
+    public void reloadConfig(CommandSender sender) {
         sender.sendMessage(ChatColor.YELLOW + "Reloading DiscordMC configuration...");
         if (plugin.reload()) {
             sender.sendMessage(ChatColor.GREEN + "DiscordMC configuration reloaded successfully!");
@@ -56,7 +56,7 @@ public class DiscordMCCommands extends BaseCommand {
     @Subcommand("status")
     @Description("Checks the status of the Discord connection")
     @CommandPermission("discordmc.status")
-    public void onStatus(CommandSender sender) {
+    public void checkStatus(CommandSender sender) {
         boolean isConnected = plugin.getDiscordManager().isConnected();
         sender.sendMessage(ChatColor.YELLOW + "Discord connection status: " + 
                            (isConnected ? ChatColor.GREEN + "Connected" : ChatColor.RED + "Disconnected"));
@@ -65,7 +65,7 @@ public class DiscordMCCommands extends BaseCommand {
     @Subcommand("togglelinking")
     @CommandPermission("discordmc.togglelinking")
     @Description("Toggle the ability to link accounts")
-    public void onToggleLinking(CommandSender sender) {
+    public void toggleLinking(CommandSender sender) {
         FileConfiguration config = plugin.getConfig();
         boolean currentState = config.getBoolean("allow-linking", true);
         config.set("allow-linking", !currentState);
@@ -77,7 +77,7 @@ public class DiscordMCCommands extends BaseCommand {
 
     @CommandAlias("link")
     @Description("Link your Minecraft account to Discord")
-    public void onLink(Player player, String code) {
+    public void linkAccount(Player player, String code) {
         if (!plugin.getConfig().getBoolean("allow-linking", true)) {
             player.sendMessage(ChatColor.RED + "Account linking is currently disabled.");
             return;
@@ -93,31 +93,30 @@ public class DiscordMCCommands extends BaseCommand {
             String discordId = pendingLink.discordId;
             String existingLink = plugin.getMongoDBManager().getDiscordId(player.getUniqueId());
             if (existingLink != null) {
-                player.sendMessage(ChatColor.RED + "Your Minecraft account is already linked to a Discord account.");
+                player.sendMessage(ChatColor.RED + plugin.getConfigManager().getMessage("minecraft.link-already-linked"));
                 return;
             }
             
             UUID existingMinecraftUUID = plugin.getMongoDBManager().getMinecraftUUID(discordId);
             if (existingMinecraftUUID != null) {
-                player.sendMessage(ChatColor.RED + "This Discord account is already linked to a different Minecraft account.");
+                player.sendMessage(ChatColor.RED + plugin.getConfigManager().getMessage("minecraft.link-discord-already-linked"));
                 return;
             }
             
             plugin.getMongoDBManager().linkAccount(player.getUniqueId(), player.getName(), discordId);
-            player.sendMessage(ChatColor.GREEN + "Your Minecraft account has been successfully linked to Discord!");
+            player.sendMessage(ChatColor.GREEN + plugin.getConfigManager().getMessage("minecraft.link-success"));
             plugin.getDiscordManager().getDiscordListener().assignLinkedRole(discordId);
 
-            // Send a direct message to the Discord user about the successful linking
-            String successMessage = "Your Discord account has been successfully linked to Minecraft account: **" + player.getName() + "**";
-            plugin.getDiscordManager().sendDirectMessageToUser(discordId, successMessage);
+            String successMessage = plugin.getConfigManager().getMessage("discord.dm-link-success").replace("{username}", player.getName());
+            plugin.getDiscordManager().sendDirectMessage(discordId, successMessage);
         } else {
-            player.sendMessage(ChatColor.RED + "Invalid or expired link code. Please generate a new one on Discord.");
+            player.sendMessage(ChatColor.RED + plugin.getConfigManager().getMessage("minecraft.link-invalid-code"));
         }
     }
 
     @CommandAlias("discord")
     @Description("Show your linked Discord account")
-    public void onDiscord(Player player) {
+    public void showLinkedAccount(Player player) {
         String discordId = plugin.getMongoDBManager().getDiscordId(player.getUniqueId());
         if (discordId != null) {
             String discordUsername = plugin.getDiscordManager().getDiscordUsername(discordId);
@@ -133,15 +132,14 @@ public class DiscordMCCommands extends BaseCommand {
 
     @CommandAlias("unlink")
     @Description("Unlink your Minecraft account from Discord")
-    public void onUnlink(Player player) {
+    public void unlinkAccount(Player player) {
         String discordId = plugin.getMongoDBManager().unlinkAccount(player.getUniqueId());
         if (discordId != null) {
             player.sendMessage(ChatColor.GREEN + "Your Minecraft account has been unlinked from Discord.");
             plugin.getDiscordManager().getDiscordListener().removeLinkedRole(discordId);
             
-            // Send a direct message to the Discord user about the successful unlinking
             String unlinkMessage = "Your Discord account has been unlinked from the Minecraft account: **" + player.getName() + "**";
-            plugin.getDiscordManager().sendDirectMessageToUser(discordId, unlinkMessage);
+            plugin.getDiscordManager().sendDirectMessage(discordId, unlinkMessage);
         } else {
             player.sendMessage(ChatColor.RED + "Your Minecraft account is not linked to a Discord account.");
         }

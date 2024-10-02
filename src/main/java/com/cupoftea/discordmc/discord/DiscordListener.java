@@ -51,29 +51,31 @@ public class DiscordListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if (event.getName().equals("link")) {
-            if (!plugin.getConfig().getBoolean("allow-linking", true)) {
-                event.reply("Account linking is currently disabled.").setEphemeral(true).queue();
-                return;
-            }
-
             String minecraftUsername = event.getOption("minecraft_username").getAsString();
             String discordId = event.getUser().getId();
             
             UUID existingUUID = plugin.getMongoDBManager().getMinecraftUUID(discordId);
             if (existingUUID != null) {
                 String existingUsername = plugin.getMongoDBManager().getMinecraftUsername(discordId);
-                event.reply("Your Discord account is already linked to the Minecraft account: " + existingUsername).setEphemeral(true).queue();
+                String message = plugin.getConfigManager().getMessage("discord.link-already-linked")
+                    .replace("{username}", existingUsername);
+                event.reply(message).setEphemeral(true).queue();
                 return;
             }
             
             String existingDiscordId = plugin.getMongoDBManager().getDiscordIdByUsername(minecraftUsername);
             if (existingDiscordId != null) {
-                event.reply("The Minecraft account " + minecraftUsername + " is already linked to a different Discord account.").setEphemeral(true).queue();
+                String message = plugin.getConfigManager().getMessage("discord.link-minecraft-already-linked")
+                    .replace("{username}", minecraftUsername);
+                event.reply(message).setEphemeral(true).queue();
                 return;
             }
             
             String linkCode = discordMCCommands.generateLinkCode(discordId, minecraftUsername);
-            event.reply("Link code generated for " + minecraftUsername + ". Please run `/link " + linkCode + "` in Minecraft to complete the linking process.").setEphemeral(true).queue();
+            String message = plugin.getConfigManager().getMessage("discord.link-command-response")
+                .replace("{username}", minecraftUsername)
+                .replace("{code}", linkCode);
+            event.reply(message).setEphemeral(true).queue();
         }
     }
 

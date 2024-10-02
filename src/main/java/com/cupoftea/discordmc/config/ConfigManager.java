@@ -1,8 +1,10 @@
 package com.cupoftea.discordmc.config;
 
 import java.io.File;
+import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ConfigManager {
@@ -12,6 +14,8 @@ public class ConfigManager {
     private String mongoDbDatabaseName;
     private String linkedAccountRoleName;
     private String linkedAccountRoleId;
+    private String syncInfoChannelId;
+    private YamlConfiguration messages;
 
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -24,6 +28,14 @@ public class ConfigManager {
         }
         plugin.reloadConfig();
         config = plugin.getConfig();
+        syncInfoChannelId = config.getString("sync-info-channel-id");
+        
+        File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
+        if (!messagesFile.exists()) {
+            plugin.saveResource("messages.yml", false);
+        }
+        messages = YamlConfiguration.loadConfiguration(messagesFile);
+
         return validateConfig();
     }
 
@@ -73,5 +85,17 @@ public class ConfigManager {
 
     public String getLinkedAccountRoleId() {
         return linkedAccountRoleId;
+    }
+
+    public String getSyncInfoChannelId() {
+        return syncInfoChannelId;
+    }
+
+    public String getMessage(String path) {
+        return messages.getString(path);
+    }
+
+    public List<String> getMessageList(String path) {
+        return messages.getStringList(path);
     }
 }

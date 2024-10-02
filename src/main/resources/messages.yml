@@ -1,0 +1,31 @@
+sync-info:
+  title: "How to Sync Your Minecraft Account"
+  description: "Follow these steps to sync your Minecraft account with Discord:"
+  color: "#0000FF"
+  steps:
+    - "Type `/link` in this Discord channel to get a code."
+    - "Join our server if you haven't already."
+    - "In the Minecraft chat, type `/link <your_unique_code>`"
+    - "You'll receive a confirmation message once your accounts are linked!"
+  footer: "If you encounter any issues, please contact a server administrator."
+
+minecraft:
+  link-success: "Your Minecraft account has been successfully linked to Discord!"
+  link-already-linked: "Your Minecraft account is already linked to a Discord account."
+  link-discord-already-linked: "This Discord account is already linked to a different Minecraft account."
+  link-invalid-code: "Invalid or expired link code. Please generate a new one on Discord."
+  unlink-success: "Your Minecraft account has been unlinked from Discord."
+  unlink-not-linked: "Your Minecraft account is not linked to a Discord account."
+  join-linked: "Welcome back, {username}! Your Minecraft account is linked to Discord."
+
+discord:
+  dm-link-success: "Your Discord account has been successfully linked to Minecraft account: **{username}**"
+  dm-unlink-success: "Your Discord account has been unlinked from the Minecraft account: **{username}**"
+  link-command-response: "Link code generated for {username}. Please run `/link {code}` in Minecraft to complete the linking process."
+  link-already-linked: "Your Discord account is already linked to the Minecraft account: {username}"
+  link-minecraft-already-linked: "The Minecraft account {username} is already linked to a different Discord account."
+
+plugin:
+  discord-connected: "Discord connection initialized successfully."
+  discord-connection-failed: "Failed to initialize Discord connection. Disabling plugin."
+  disabled: "DiscordMC plugin has been disabled!"

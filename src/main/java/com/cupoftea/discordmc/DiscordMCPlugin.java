@@ -33,8 +33,11 @@ public class DiscordMCPlugin extends JavaPlugin {
 		commandManager.registerCommand(discordMCCommands);
 
 		discordManager = new DiscordManager(this, configManager, discordMCCommands);
-		if (!discordManager.initialize()) {
-			getLogger().severe("Failed to initialize Discord connection. Disabling plugin.");
+		if (discordManager.initialize()) {
+			getLogger().info(configManager.getMessage("plugin.discord-connected"));
+			discordManager.sendSyncInfoEmbed();
+		} else {
+			getLogger().severe(configManager.getMessage("plugin.discord-connection-failed"));
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -55,7 +58,7 @@ public class DiscordMCPlugin extends JavaPlugin {
 		if (discordManager != null) {
 			discordManager.shutdown();
 		}
-		getLogger().info("DiscordMC plugin has been disabled!");
+		getLogger().info(configManager.getMessage("plugin.disabled"));
 		if (mongoDBManager != null) {
 			mongoDBManager.close();
 		}
