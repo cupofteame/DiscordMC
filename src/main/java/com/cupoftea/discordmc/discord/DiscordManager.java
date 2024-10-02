@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -25,6 +26,7 @@ public class DiscordManager {
     private JDA jda;
     private String discordChannelId;
     private DiscordListener discordListener;
+    private String lastSentSyncInfoContent;
 
     public DiscordManager(DiscordMCPlugin plugin, ConfigManager configManager, DiscordMCCommands discordMCCommands) {
         this.plugin = plugin;
@@ -44,6 +46,7 @@ public class DiscordManager {
                     .build();
             jda.awaitReady();
             discordListener.registerCommands(jda);
+            updateSyncInfo();
             return true;
         } catch (Exception e) {
             plugin.getLogger().severe("Failed to initialize Discord bot: " + e.getMessage());
@@ -143,6 +146,34 @@ public class DiscordManager {
             return;
         }
 
+        EmbedBuilder embed = createSyncInfoEmbed();
+        String newContent = embed.build().getDescription();
+
+        channel.getHistory().retrievePast(100).queue(messages -> {
+            Message existingMessage = findExistingBotMessage(messages);
+            if (existingMessage != null) {
+                if (!newContent.equals(lastSentSyncInfoContent)) {
+                    existingMessage.editMessageEmbeds(embed.build()).queue(
+                        success -> {
+                            plugin.getLogger().info("Sync info embed updated successfully.");
+                            lastSentSyncInfoContent = newContent;
+                        },
+                        error -> plugin.getLogger().warning("Failed to update sync info embed: " + error.getMessage())
+                    );
+                }
+            } else {
+                channel.sendMessageEmbeds(embed.build()).queue(
+                    success -> {
+                        plugin.getLogger().info("Sync info embed sent successfully.");
+                        lastSentSyncInfoContent = newContent;
+                    },
+                    error -> plugin.getLogger().warning("Failed to send sync info embed: " + error.getMessage())
+                );
+            }
+        });
+    }
+
+    private EmbedBuilder createSyncInfoEmbed() {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle(configManager.getMessage("sync-info.title"));
         embed.setColor(Color.decode(configManager.getMessage("sync-info.color")));
@@ -154,10 +185,17 @@ public class DiscordManager {
         }
 
         embed.setFooter(configManager.getMessage("sync-info.footer"));
+        return embed;
+    }
 
-        channel.sendMessageEmbeds(embed.build()).queue(
-            success -> plugin.getLogger().info("Sync info embed sent successfully."),
-            error -> plugin.getLogger().warning("Failed to send sync info embed: " + error.getMessage())
-        );
+    private Message findExistingBotMessage(List<Message> messages) {
+        return messages.stream()
+                .filter(message -> message.getAuthor().equals(jda.getSelfUser()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void updateSyncInfo() {
+        sendSyncInfoEmbed();
     }
 }

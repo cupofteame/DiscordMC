@@ -1,6 +1,8 @@
 package com.cupoftea.discordmc.config;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,6 +18,7 @@ public class ConfigManager {
     private String linkedAccountRoleId;
     private String syncInfoChannelId;
     private YamlConfiguration messages;
+    private FileTime lastMessagesModified;
 
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -35,8 +38,29 @@ public class ConfigManager {
             plugin.saveResource("messages.yml", false);
         }
         messages = YamlConfiguration.loadConfiguration(messagesFile);
+        lastMessagesModified = getLastModifiedTime(messagesFile);
 
         return validateConfig();
+    }
+
+    public boolean hasMessagesChanged() {
+        File messagesFile = new File(plugin.getDataFolder(), "messages.yml");
+        FileTime currentModified = getLastModifiedTime(messagesFile);
+        if (currentModified != null && !currentModified.equals(lastMessagesModified)) {
+            lastMessagesModified = currentModified;
+            messages = YamlConfiguration.loadConfiguration(messagesFile);
+            return true;
+        }
+        return false;
+    }
+
+    private FileTime getLastModifiedTime(File file) {
+        try {
+            return Files.getLastModifiedTime(file.toPath());
+        } catch (Exception e) {
+            plugin.getLogger().warning("Failed to get last modified time for " + file.getName());
+            return null;
+        }
     }
 
     private boolean validateConfig() {

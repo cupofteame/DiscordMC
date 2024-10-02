@@ -1,6 +1,7 @@
 package com.cupoftea.discordmc;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.cupoftea.discordmc.commands.DiscordMCCommands;
 import com.cupoftea.discordmc.config.ConfigManager;
@@ -51,6 +52,16 @@ public class DiscordMCPlugin extends JavaPlugin {
 		);
 
 		getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				if (configManager.hasMessagesChanged()) {
+					getLogger().info("messages.yml has been updated. Refreshing sync info...");
+					discordManager.updateSyncInfo();
+				}
+			}
+		}.runTaskTimer(this, 20 * 60, 20 * 60);
 	}
 
 	@Override
@@ -89,6 +100,8 @@ public class DiscordMCPlugin extends JavaPlugin {
 		}
 
 		getServer().getPluginManager().registerEvents(new MinecraftChatListener(this, discordManager), this);
+
+		discordManager.updateSyncInfo();
 
 		getLogger().info("DiscordMC plugin has been reloaded successfully!");
 		return true;
