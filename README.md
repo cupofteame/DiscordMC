@@ -12,6 +12,8 @@ DiscordMC is a Minecraft plugin that bridges chat between your Minecraft server 
 - Toggle account linking on/off
 - Automatic username updates on player join
 - Direct messaging to Discord users for successful linking/unlinking
+- Sync info embed in a dedicated Discord channel
+- MongoDB integration for persistent data storage
 
 ## Requirements
 
@@ -32,7 +34,7 @@ These dependencies are automatically managed by Gradle and don't require manual 
 
 1. Place the plugin JAR in your server's `plugins` folder
 2. Start the server to generate the config file
-3. Edit `plugins/DiscordMC/config.yml` with your Discord bot token, channel ID, and MongoDB connection details
+3. Edit `plugins/DiscordMC/config.yml` with your Discord bot token, channel IDs, and MongoDB connection details
 4. Restart the server or reload the plugin
 
 ## Commands
@@ -50,12 +52,25 @@ These dependencies are automatically managed by Gradle and don't require manual 
 - `discordmc.reload` - Allows use of the reload command
 - `discordmc.status` - Allows use of the status command
 - `discordmc.togglelinking` - Allows toggling the ability to link accounts
+- `discordmc.linkaccount` - Allows linking Minecraft and Discord accounts (default: true)
 
 ## Account Linking
 
 1. Use the `/link` command in Discord to generate a link code
 2. In Minecraft, use `/link <code>` to complete the linking process
 3. Once linked, your Discord account will be assigned a configurable role
+
+## Configuration
+
+The `config.yml` file allows you to customize various aspects of the plugin, including:
+- Discord bot token
+- Discord channel IDs for chat relay and sync info
+- MongoDB connection details
+- Linked account role settings
+
+## Messages
+
+The `messages.yml` file contains all the plugin messages, allowing for easy customization and localization.
 
 ## Support
 
