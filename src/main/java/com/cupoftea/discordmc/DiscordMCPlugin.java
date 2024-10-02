@@ -1,5 +1,6 @@
 package com.cupoftea.discordmc;
 
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -94,11 +95,13 @@ public class DiscordMCPlugin extends JavaPlugin {
 		}
 
 		discordManager = new DiscordManager(this, configManager, discordMCCommands);
+
 		if (!discordManager.initialize()) {
 			getLogger().severe("Failed to reinitialize Discord connection.");
 			return false;
 		}
 
+		HandlerList.unregisterAll(this);
 		getServer().getPluginManager().registerEvents(new MinecraftChatListener(this, discordManager), this);
 
 		discordManager.updateSyncInfo();

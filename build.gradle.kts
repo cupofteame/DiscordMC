@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.cupoftea"
-version = "1.3-SNAPSHOT"
+version = "1.3.5-SNAPSHOT"
 
 repositories {
     mavenCentral()

@@ -3,6 +3,7 @@ package com.cupoftea.discordmc.discord;
 import java.awt.Color;
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.entity.Player;
 
@@ -57,10 +58,22 @@ public class DiscordManager {
     public void shutdown() {
         if (jda != null) {
             jda.shutdown();
+            try {
+                jda.awaitShutdown(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                plugin.getLogger().warning("Interrupted while shutting down Discord connection: " + e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+            jda = null;
         }
     }
 
     public void sendMessageToDiscord(Player player, String message) {
+        if (jda == null || jda.getStatus() != JDA.Status.CONNECTED) {
+            plugin.getLogger().warning("Cannot send message to Discord: Bot is not connected.");
+            return;
+        }
+
         TextChannel channel = jda.getTextChannelById(discordChannelId);
         if (channel != null) {
             EmbedBuilder embed = new EmbedBuilder();
@@ -70,7 +83,10 @@ public class DiscordManager {
             embed.setFooter("Minecraft Chat");
             embed.setTimestamp(Instant.now());
 
-            channel.sendMessageEmbeds(embed.build()).queue();
+            channel.sendMessageEmbeds(embed.build()).queue(
+                success -> {},
+                error -> plugin.getLogger().warning("Failed to send message to Discord: " + error.getMessage())
+            );
         } else {
             plugin.getLogger().warning("Failed to send message to Discord: Channel not found");
         }
