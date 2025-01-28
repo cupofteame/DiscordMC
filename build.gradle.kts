@@ -6,8 +6,9 @@
  */
 
 plugins {
-    id("java")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("jvm") version "1.9.22"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("xyz.jpenilla.run-paper") version "2.2.2"
 }
 
 group = "com.cupoftea"
@@ -16,25 +17,70 @@ version = "1.3.5-SNAPSHOT"
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://repo.aikar.co/content/groups/aikar/")
+    maven("https://oss.sonatype.org/content/groups/public/")
 }
 
 dependencies {
-    compileOnly("com.destroystokyo.paper:paper-api:1.13.2-R0.1-SNAPSHOT")
-    implementation("net.dv8tion:JDA:5.0.0-beta.13")
-    implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    implementation("org.mongodb:mongodb-driver-sync:4.9.1")
+    // Kotlin
+    implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
+    
+    // Paper API
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    
+    // Adventure & MiniMessage
+    implementation("net.kyori:adventure-api:4.14.0")
+    implementation("net.kyori:adventure-text-minimessage:4.14.0")
+    
+    // Discord
+    implementation("net.dv8tion:JDA:5.0.0-beta.20")
+    
+    // Cloud Command Framework
+    implementation("cloud.commandframework:cloud-paper:1.8.4")
+    implementation("cloud.commandframework:cloud-annotations:1.8.4")
+    implementation("cloud.commandframework:cloud-kotlin-extensions:1.8.4")
+    implementation("cloud.commandframework:cloud-kotlin-coroutines:1.8.4")
+    implementation("cloud.commandframework:cloud-kotlin-coroutines-annotations:1.8.4")
+    
+    // MongoDB
+    implementation("org.mongodb:mongodb-driver-sync:4.11.1")
+    
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 }
 
 tasks {
+    build {
+        dependsOn(shadowJar)
+    }
+    
     shadowJar {
         archiveBaseName.set("DiscordMC")
         archiveClassifier.set("")
-        relocate("co.aikar.commands", "com.cupoftea.discordmc.acf")
-        relocate("co.aikar.locales", "com.cupoftea.discordmc.locales")
+        
+        // Relocate dependencies to avoid conflicts
+        relocate("cloud.commandframework", "com.cupoftea.discordmc.libs.cloud")
+        relocate("io.leangen.geantyref", "com.cupoftea.discordmc.libs.typetoken")
+        
+        // Ensure shadowJar runs after jar
+        dependsOn(jar)
+    }
+    
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "17"
+            freeCompilerArgs += "-Xjvm-default=all"
+        }
+    }
+    
+    jar {
+        // Ensure the jar task runs after compilation
+        dependsOn(compileKotlin)
     }
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }

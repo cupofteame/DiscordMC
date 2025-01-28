@@ -10,13 +10,13 @@ sync-info:
   footer: "If you encounter any issues, please contact a server administrator."
 
 minecraft:
-  link-success: "Your Minecraft account has been successfully linked to Discord!"
-  link-already-linked: "Your Minecraft account is already linked to a Discord account."
-  link-discord-already-linked: "This Discord account is already linked to a different Minecraft account."
-  link-invalid-code: "Invalid or expired link code. Please generate a new one on Discord."
-  unlink-success: "Your Minecraft account has been unlinked from Discord."
-  unlink-not-linked: "Your Minecraft account is not linked to a Discord account."
-  join-linked: "Welcome back, {username}! Your Minecraft account is linked to Discord."
+  link-success: "<green>Your Minecraft account has been successfully linked to Discord!</green>"
+  link-already-linked: "<red>Your Minecraft account is already linked to a Discord account.</red>"
+  link-discord-already-linked: "<red>This Discord account is already linked to a different Minecraft account.</red>"
+  link-invalid-code: "<red>Invalid or expired link code. Please generate a new one on Discord.</red>"
+  unlink-success: "<green>Your Minecraft account has been unlinked from Discord.</green>"
+  unlink-not-linked: "<red>Your Minecraft account is not linked to a Discord account.</red>"
+  join-linked: "<green>Welcome back, {username}! Your Minecraft account is linked to Discord.</green>"
 
 discord:
   dm-link-success: "Your Discord account has been successfully linked to Minecraft account: **{username}**"

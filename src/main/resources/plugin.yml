@@ -1,38 +1,9 @@
 name: DiscordMC
 version: '${version}'
 main: com.cupoftea.discordmc.DiscordMCPlugin
-api-version: '1.13'
+api-version: '1.20.4'
 authors: [cupoftea]
 description: A plugin that bridges Minecraft and Discord chat
 
-commands:
-  discordmc:
-    description: Main command for DiscordMC plugin
-    aliases: [dmc]
-  link:
-    description: Link your Minecraft account to Discord
-  unlink:
-    description: Unlink your Minecraft account from Discord
-  discord:
-    description: Show your linked Discord account
-  togglelinking:
-    description: Toggle the ability to link accounts
-    permission: discordmc.togglelinking
-
-permissions:
-  discordmc.reload:
-    description: Allows reloading the DiscordMC configuration
-    default: op
-  discordmc.status:
-    description: Allows checking the Discord connection status
-    default: op
-  discordmc.linkaccount:
-    description: Allows linking Minecraft and Discord accounts
-    default: true
-  discordmc.togglelinking:
-    description: Allows toggling the ability to link accounts
-    default: op
-
-# DO NOT TOUCH
 config-files:
   - messages.yml
